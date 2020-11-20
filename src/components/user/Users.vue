@@ -409,7 +409,7 @@ export default {
       })
     },
     /*设置用户*/
-    settingUser (row) {
+    showSettingUserDialog (id) {
 
     }
   },
