@@ -71,7 +71,7 @@
         :page-sizes="[3, 5, 10]"
         :page-size="param.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total=total>
+        :total="total">
       </el-pagination>
     </el-card>
     <!--添加用户对话框-->
