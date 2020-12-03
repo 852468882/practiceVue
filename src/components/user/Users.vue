@@ -50,10 +50,10 @@
               <el-button type="danger" icon="el-icon-delete" size="mini" circle
                          @click="deleteUser(scope.row.id)"></el-button>
             </el-tooltip>
-            <!--分配角色-->
+            <!--设置角色-->
             <el-tooltip content="设置" placement="top-start" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini" circle
-                         @click="showSettingUserDialog(scope.row.id)"></el-button>
+                         @click="showSettingUserDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -95,7 +95,7 @@
         </el-form-item>
         <el-form-item label="角色">
           <el-select v-model="addUserForm.roleId" placeholder="请选择角色" @visible-change="getRoles">
-            <el-option v-for="item in roleOptions" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
+            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -121,6 +121,23 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editUserDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!--设置角色-->
+    <el-dialog title="设置角色" :visible.sync="setRoleDialogVisible" width="50%" @closed="closeSetRole">
+      <div>
+        <p>当前用户：{{ userInfo.username }}</p>
+        <p>当前角色：{{ userInfo.roleName }}</p>
+        <p>
+          分配新角色：
+          <el-select v-model="selectdRoleId" placeholder="请选择角色" @visible-change="getRoles">
+            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="settingUser">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -178,7 +195,7 @@ export default {
         roleId: ''
       },
       // 所有的角色
-      roleOptions: [],
+      rolesList: [],
       // 添加用户的数据验证规则
       addUserRules: {
         username: [
@@ -265,13 +282,21 @@ export default {
           }
         ]
       },
+      /*设置角色*/
+      // 控制设置角色对话框的显示与隐藏
+      setRoleDialogVisible: false,
+      // 需要被分配角色的用户信息
+      userInfo: {},
+      // 分配角色时的roleId
+      selectdRoleId: ''
     }
   },
   methods: {
+    // 获取用户列表
     getUserList () {
       this.$http.get('users', { params: this.param }).then(
         resp => {
-          console.log(resp.data)
+          //console.log(resp.data)
           if (resp.data.status === 200) {
             this.total = resp.data.data.total
             this.userList = resp.data.data.list
@@ -331,9 +356,13 @@ export default {
     },
     // 获取所有角色
     getRoles (appear) {
-      if (appear) {
-        this.$http.get('allRoles').then(resp => {
-          this.roleOptions = resp.data.data
+      if (appear && this.rolesList.length === 0) {
+        this.$http.get('roleList').then(resp => {
+          if (resp.data.status === 200) {
+            this.rolesList = resp.data.data
+          } else {
+            this.$message.error('获取角色列表失败！')
+          }
         })
       }
     },
@@ -346,7 +375,7 @@ export default {
           this.$http.post('createUser', this.addUserForm).then(resp => {
             if (resp.data.status === 201) {
               this.addUserDialogVisible = false
-              this.$message.success('添加成功')
+              this.$message.success('添加用户成功')
               this.getUserList()
             } else {
               this.$message.error('添加用户失败')
@@ -356,16 +385,16 @@ export default {
       })
     },
     /*编辑用户*/
-    // 展示编辑用户的对话框
+    // 根据ID查询用户详情，展示编辑用户的对话框
     showEditUserDialog (id) {
       this.$http.get('users/' + id).then(resp => {
         if (resp.data.status === 200) {
           this.editUserForm = resp.data.data
+          this.editUserDialogVisible = true
         } else {
           this.$message.error('获取用户信息失败')
         }
       })
-      this.editUserDialogVisible = true
     },
     // 隐藏修改用户表单
     closeEditUserForm () {
@@ -379,15 +408,14 @@ export default {
           this.$http.put('users', this.editUserForm).then(resp => {
             if (resp.data.status === 200) {
               this.editUserDialogVisible = false
-              this.$message.success('编辑成功')
+              this.$message.success('编辑成功！')
               this.getUserList()
             } else {
-              this.$message.error('编辑失败')
+              this.$message.error('编辑失败！')
             }
           })
         }
       })
-
     },
     /*删除用户*/
     deleteUser (id) {
@@ -408,9 +436,32 @@ export default {
         this.$message.info('已取消删除')
       })
     },
-    /*设置用户*/
-    showSettingUserDialog (id) {
-
+    /*设置角色*/
+    // 展示设置角色的对话框
+    showSettingUserDialog (user) {
+      this.userInfo = user
+      this.setRoleDialogVisible = true
+    },
+    // 关闭设置角色的对话框
+    closeSetRole () {
+      this.selectdRoleId = ''
+      this.userInfo = {}
+    },
+    // 设置角色请求
+    settingUser () {
+      if (this.selectdRoleId){
+        this.$http.put(`users/${this.userInfo.id}/role`, {rid: this.selectdRoleId}).then(resp => {
+          if (resp.data.status === 203){
+            this.$message.success('更新角色成功！')
+            this.getUserList()
+            this.setRoleDialogVisible = false
+          }else {
+            this.$message.error('更新角色失败！')
+          }
+        })
+      } else {
+        this.$message.error('请选择该用户的新角色！')
+      }
     }
   },
   created () {

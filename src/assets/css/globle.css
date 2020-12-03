@@ -3,6 +3,8 @@ html, body, #app {
     height: 100%;
     margin: 0;
     padding: 0;
+    /*最小页面宽度，以防止页面过窄导致结构换行垮掉*/
+    min-width: 1366px;
 }
 
 .el-card {
