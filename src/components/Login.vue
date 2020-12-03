@@ -3,7 +3,7 @@
     <div class="login_box">
       <!--头像区-->
       <div class="avatar_box">
-        <img src="../assets/imgs/touxiang.jpg" alt="">
+        <img src="../assets/imgs/touxiang2.jpg" alt="">
       </div>
       <!--登录表单区域-->
       <el-form ref="loginFormRef" label-width="0px" class="login_form" :model="loginForm" :rules="loginFromRules">
@@ -131,11 +131,11 @@ export default {
   border: 1px solid #eee;
   border-radius: 50%;
   padding: 1px;
-  box-shadow: 0 0 5px #ddd;
+  box-shadow: 0 0 10px #ddd;
   position: absolute;
   left: 50%;
   transform: translate(-50%, -50%);
-
+  background-color: #fff;
   img {
     width: 100%;
     height: 100%;
