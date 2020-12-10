@@ -357,7 +357,7 @@ export default {
     // 获取所有角色
     getRoles (appear) {
       if (appear && this.rolesList.length === 0) {
-        this.$http.get('roleList').then(resp => {
+        this.$http.get('roles/list').then(resp => {
           if (resp.data.status === 200) {
             this.rolesList = resp.data.data
           } else {
@@ -432,9 +432,7 @@ export default {
             this.$message.error('删除失败')
           }
         })
-      }).catch(() => {
-        this.$message.info('已取消删除')
-      })
+      }).catch(() => this.$message.info('已取消删除'))
     },
     /*设置角色*/
     // 展示设置角色的对话框

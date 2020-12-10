@@ -18,5 +18,13 @@ html, body, #app {
 }
 
 .el-pagination {
+    /*距离上边距 15px*/
+    margin-top: 15px;
+    /*设置为居中分布*/
+    text-align: center;
+}
+
+.zk-table{
+    /*距离上边距 15px*/
     margin-top: 15px;
 }

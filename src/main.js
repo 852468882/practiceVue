@@ -19,6 +19,13 @@ axios.interceptors.request.use(config => {
 })
 
 Vue.prototype.$http = axios
+
+// 导入vue-table-with-tree-grid
+import TreeTable from 'vue-table-with-tree-grid'
+
+// 全局组件注册vue-table-with-tree-grid
+Vue.component('tree-table', TreeTable)
+
 Vue.config.productionTip = false
 
 new Vue({

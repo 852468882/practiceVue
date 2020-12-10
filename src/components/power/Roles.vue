@@ -257,9 +257,7 @@ export default {
             this.$message.error('删除失败')
           }
         })
-      }).catch(() => {
-        this.$message.info('已取消删除')
-      })
+      }).catch(() => this.$message.info('已取消删除'))
     },
     /*表格展开区域*/
     // 删除权限
@@ -275,9 +273,7 @@ export default {
         }).catch(err => {
           this.$message.error('删除失败！请联系管理员')
         })
-      }).catch(() => {
-        this.$message.info('已取消删除')
-      })
+      }).catch(() => this.$message.info('已取消删除'))
     },
     /*分配权限*/
     // 展示分配权限的对话框
