@@ -230,7 +230,7 @@ export default {
       this.$refs.editRoleFormRef.validate(valid => {
         if (valid) {
           this.$http.put('roles', this.editRoleForm).then(resp => {
-            if (resp.data.status === 200) {
+            if (resp.data.status === 203) {
               this.editRoleDialogVisible = false
               this.$message.success('编辑成功！')
               this.getRoleList()
@@ -250,7 +250,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http.delete('roles/' + id).then(resp => {
-          if (resp.data.status === 200) {
+          if (resp.data.status === 204) {
             this.$message.success('删除成功!')
             this.getRoleList()
           } else {
@@ -319,7 +319,7 @@ export default {
       console.log(idStr)
       this.$http.post(`roles/${this.roleId}/rights`, { rids: idStr }).then(resp => {
         // console.log(resp.data)
-        if (resp.data.status === 200){
+        if (resp.data.status === 203){
           this.$message.success('分配角色权限成功！')
           this.setRightsDialogVisible = false
           this.getRoleList()

@@ -75,8 +75,8 @@
           props: 用来配置cascader
           -->
           <el-cascader
-            v-model="selectedKeys"
-            :options="parentCategoryDateList"
+            v-model="selectedCategoryPids"
+            :options="parentCategoryDataList"
             :props="cascaderProps"
             @change="parentCategoryChange"
             clearable></el-cascader>
@@ -172,7 +172,7 @@ export default {
         ]
       },
       // 1、2级分类数据
-      parentCategoryDateList: [],
+      parentCategoryDataList: [],
       // 级联选择器的配置对象
       cascaderProps: {
         expandTrigger: 'hover',
@@ -183,7 +183,7 @@ export default {
         checkStrictly: true
       },
       // 选中的父级分类的Id数组
-      selectedKeys: [],
+      selectedCategoryPids: [],
       /*编辑分类*/
       // 编辑商品分类对话框展示与隐藏
       editCategoryDialogVisible: false,
@@ -209,7 +209,7 @@ export default {
     getCateList () {
       this.$http.get(`categories`, { params: this.queryInfo }).then(resp => {
         if (resp.data.status === 200) {
-          console.log(resp.data.data)
+          // console.log(resp.data.data)
           this.total = resp.data.data.total
           this.cateList = resp.data.data.list
         } else {
@@ -237,8 +237,7 @@ export default {
       this.addCategoryDialogVisible = true
       this.$http.get('categories', { params: { type: 2 } }).then(resp => {
         if (resp.data.status === 200) {
-          console.log(resp.data.data)
-          this.parentCategoryDateList = resp.data.data.list
+          this.parentCategoryDataList = resp.data.data.list
         } else {
           this.$message.error('获取商品分类信息失败！')
         }
@@ -252,17 +251,17 @@ export default {
       // 清空input框
       this.$refs.addCategoryFormRef.resetFields()
       // 清空cascader级联选择器
-      this.selectedKeys = []
+      this.selectedCategoryPids = []
       // 清空表单数据
       this.addCategoryForm.level = 0
       this.addCategoryForm.pid = 0
     },
     // 父级分类的选择项发生变化触发函数
     parentCategoryChange () {
-      // 如果 selectedKeys 的 length > 0 说明该分类有父级分类，需要为 pid 设值； 反之 重置为 0
-      if (this.selectedKeys.length > 0) {
-        this.addCategoryForm.pid = this.selectedKeys[this.selectedKeys.length - 1]
-        this.addCategoryForm.level = this.selectedKeys.length
+      // 如果 selectedCategoryPids 的 length > 0 说明该分类有父级分类，需要为 pid 设值； 反之 重置为 0
+      if (this.selectedCategoryPids.length > 0) {
+        this.addCategoryForm.pid = this.selectedCategoryPids[this.selectedCategoryPids.length - 1]
+        this.addCategoryForm.level = this.selectedCategoryPids.length
       } else {
         this.addCategoryForm.pid = 0
         this.addCategoryForm.level = 0

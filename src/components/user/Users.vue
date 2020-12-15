@@ -336,7 +336,7 @@ export default {
       }).then(() => {
         this.$http.put(`users/${row.id}/state/${row.status}`).then(
           resp => {
-            if (resp.data.status !== 200) {
+            if (resp.data.status !== 203) {
               row.status = !row.status
               this.$message.error('修改失败，请检查！')
             } else {
@@ -406,7 +406,7 @@ export default {
       this.$refs.editUserFormRef.validate(valid => {
         if (valid) {
           this.$http.put('users', this.editUserForm).then(resp => {
-            if (resp.data.status === 200) {
+            if (resp.data.status === 203) {
               this.editUserDialogVisible = false
               this.$message.success('编辑成功！')
               this.getUserList()
@@ -425,7 +425,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http.delete('users/' + id).then(resp => {
-          if (resp.data.status === 200) {
+          if (resp.data.status === 204) {
             this.$message.success('删除成功!')
             this.getUserList()
           } else {
