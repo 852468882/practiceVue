@@ -30,7 +30,16 @@
           <el-table :data="manyTableData" style="width: 100%" border>
             <el-table-column type="expand">
               <template slot-scope="scope">
+                <!--展开行的标签-->
                 <el-tag v-for="(item, i) in scope.row.vals" :key="i" closable>{{ item }}</el-tag>
+                <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue"
+                          ref="saveTagInput" size="small"
+                          @keyup.enter.native="handleInputConfirm(scope.row)"
+                          @blur="handleInputConfirm(scope.row)">
+                </el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New
+                  Tag
+                </el-button>
               </template>
             </el-table-column>
             <el-table-column type="index" label="#"></el-table-column>
@@ -154,7 +163,8 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      /*展开后的标签*/
     }
   },
   methods: {
@@ -180,6 +190,12 @@ export default {
             resp.data.data.forEach(item => {
               if (item.write === 'list') {
                 item.vals = item.vals ? item.vals.split(',') : []
+                // 控制文本的显示与隐藏
+                item.inputVisible = false
+                //this.$set(item,"inputVisible",false)
+                // 文本框输入的值
+                item.inputValue = ''
+                //this.$set(item,"inputValue",'')
               }
             })
             if (this.activeName === 'many') {
@@ -277,6 +293,25 @@ export default {
           }
         })
       }).catch(() => this.$message.info('已取消删除'))
+    },
+    /*展开后的标签*/
+    // 当按下回车或失去焦点时触发
+    handleInputConfirm (row) {
+      if (row.inputValue.trim().length === 0){
+        row.inputValue = ''
+      } else {
+
+      }
+      row.inputVisible = false
+    },
+    // 展示输入框
+    showInput (row) {
+      row.inputVisible = true
+      // $nextTick的作用：当页面元素被重新渲染之后，会触发该函数
+      this.$nextTick(_ => {
+        // 获取文本框，使文本框自动获得焦点
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
     }
   },
   /*计算属性*/
@@ -312,5 +347,13 @@ export default {
 
 .el-tag {
   margin: 7px;
+}
+
+.button-new-tag {
+  width: 120px;
+}
+
+.input-new-tag {
+  width: 120px;
 }
 </style>
