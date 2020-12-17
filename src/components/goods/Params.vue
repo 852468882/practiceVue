@@ -31,14 +31,15 @@
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <!--展开行的标签-->
-                <el-tag v-for="(item, i) in scope.row.vals" :key="i" closable>{{ item }}</el-tag>
+                <el-tag v-for="(item, i) in scope.row.vals" :key="i" closable
+                        @close="tagClose(i,scope.row)">{{ item }}
+                </el-tag>
                 <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue"
                           ref="saveTagInput" size="small"
                           @keyup.enter.native="handleInputConfirm(scope.row)"
                           @blur="handleInputConfirm(scope.row)">
                 </el-input>
-                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New
-                  Tag
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">添加属性值
                 </el-button>
               </template>
             </el-table-column>
@@ -61,7 +62,21 @@
           </el-button>
           <!--静态属性表格-->
           <el-table :data="onlyTableData" style="width: 100%" border>
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <!--展开行的标签-->
+                <el-tag v-for="(item, i) in scope.row.vals" :key="i" closable
+                        @close="tagClose(i,scope.row)">{{ item }}
+                </el-tag>
+                <el-input class="input-new-tag" v-if="scope.row.inputVisible" v-model="scope.row.inputValue"
+                          ref="saveTagInput" size="small"
+                          @keyup.enter.native="handleInputConfirm(scope.row)"
+                          @blur="handleInputConfirm(scope.row)">
+                </el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">添加属性值
+                </el-button>
+              </template>
+            </el-table-column>
             <el-table-column type="index" label="#"></el-table-column>
             <el-table-column label="属性名称" prop="name"></el-table-column>
             <el-table-column label="操作">
@@ -188,15 +203,11 @@ export default {
         }).then(resp => {
           if (resp.data.status === 200) {
             resp.data.data.forEach(item => {
-              if (item.write === 'list') {
-                item.vals = item.vals ? item.vals.split(',') : []
-                // 控制文本的显示与隐藏
-                item.inputVisible = false
-                //this.$set(item,"inputVisible",false)
-                // 文本框输入的值
-                item.inputValue = ''
-                //this.$set(item,"inputValue",'')
-              }
+              item.vals = item.vals ? item.vals.split(',') : []
+              // 控制文本的显示与隐藏
+              item.inputVisible = false
+              // 文本框输入的值
+              item.inputValue = ''
             })
             if (this.activeName === 'many') {
               this.manyTableData = resp.data.data
@@ -217,6 +228,8 @@ export default {
     categoryChange () {
       if (this.selectedCategoryIds.length !== 3) {
         this.selectedCategoryIds = []
+        this.manyTableData = []
+        this.onlyTableData = []
       } else {
         this.getParamsData()
       }
@@ -297,26 +310,54 @@ export default {
     /*展开后的标签*/
     // 当按下回车或失去焦点时触发
     handleInputConfirm (row) {
-      if (row.inputValue.trim().length === 0){
+      if (row.inputValue.trim().length === 0) {
         row.inputValue = ''
       } else {
-
+        row.vals.push(row.inputValue.trim())
+        row.inputValue = ''
+        this.editAttribute(row)
       }
       row.inputVisible = false
     },
+    // 编辑提交参数
+    editAttribute (row) {
+      this.$http.put(`categories/attributes/${this.categoryId}/${row.id}`, {
+        name: row.name,
+        sel: row.sel,
+        vals: row.vals.join(',')
+      }).then(resp => {
+        if (resp.data.status === 203) {
+          this.$message.success('修改参数项成功！')
+        } else {
+          this.$message.success('修改参数项失败！')
+        }
+      })
+    },
     // 展示输入框
     showInput (row) {
+      console.log(row)
       row.inputVisible = true
       // $nextTick的作用：当页面元素被重新渲染之后，会触发该函数
       this.$nextTick(_ => {
         // 获取文本框，使文本框自动获得焦点
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    // 删除标签
+    tagClose (i, row) {
+      this.$confirm(`您确定删除该${this.dialogTitle}的属性吗?`, `删除${this.dialogTitle}的属性`, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        row.vals.splice(i, 1)
+        this.editAttribute(row)
+      }).catch(() => this.$message.info('已取消删除'))
     }
   },
   /*计算属性*/
   computed: {
-    // 如果按钮需要被禁用，则返回 true
+    // 如果 添加动态参数/静态属性 按钮需要被禁用，则返回 true
     isButtonDisabled () {
       return this.selectedCategoryIds.length !== 3
     },
@@ -328,7 +369,7 @@ export default {
         return null
       }
     },
-    // 对话框动态标题
+    // 添加/修改 对话框的动态标题
     dialogTitle () {
       return this.activeName === 'many' ? '动态参数' : '静态属性'
     },
