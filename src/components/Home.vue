@@ -23,6 +23,10 @@
           :collapse-transition="false"
           router
           :default-active="activePath">
+          <el-menu-item index="/welcome">
+            <i class="el-icon-sunny"></i>
+            <span slot="title">首页</span>
+          </el-menu-item>
           <!--一级菜单-->
           <el-submenu :index="first.id + ''" v-for="first in menuList" :key="first.id">
             <!--一级菜单模板区域-->
@@ -76,14 +80,14 @@ export default {
       isCollapse: false,
       //菜单的路由地址
       urlObj: {
-        '商品列表': 'goods',
-        '商品分类': 'categories',
-        '分类参数': 'params',
-        '订单列表': 'orders',
-        '角色列表': 'roles',
-        '权限列表': 'rights',
-        '用户列表': 'users',
-        '数据报表': 'reports',
+        '商品列表': '/goods',
+        '商品分类': '/categories',
+        '分类参数': '/params',
+        '订单列表': '/orders',
+        '角色列表': '/roles',
+        '权限列表': '/rights',
+        '用户列表': '/users',
+        '数据报表': '/reports',
       },
       //被激活的链接地址
       activePath: ''
@@ -105,7 +109,7 @@ export default {
     getMenuList () {
       this.$http.get('menus').then(
         resp => {
-          //console.log(resp.data)
+          // console.log(resp.data)
           if (resp.data.status === 200) {
             this.menuList = resp.data.data
           } else {
@@ -186,5 +190,9 @@ export default {
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
+}
+
+.el-icon-sunny{
+  margin-left: -4px;
 }
 </style>
