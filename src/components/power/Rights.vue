@@ -39,7 +39,7 @@ export default {
       this.$http.get('rights/list').then(resp => {
         if (resp.data.status === 200) {
           this.rightsList = resp.data.data
-          //console.log(resp.data)
+          // console.log(resp.data)
         } else {
           this.$message.error('获取权限列表失败')
         }

@@ -25,7 +25,7 @@
         style="width: 100%"
         border stripe>
         <el-table-column type="index" width="50"></el-table-column>
-        <el-table-column prop="username" label=姓名 width="180"></el-table-column>
+        <el-table-column prop="username" label="姓名" width="180"></el-table-column>
         <el-table-column prop="email" label="邮箱" width="250"></el-table-column>
         <el-table-column prop="mobile" label="电话" width="130"></el-table-column>
         <el-table-column prop="roleName" label="角色" width="100"></el-table-column>
@@ -296,7 +296,7 @@ export default {
     getUserList () {
       this.$http.get('users', { params: this.param }).then(
         resp => {
-          //console.log(resp.data)
+          // console.log(resp.data)
           if (resp.data.status === 200) {
             this.total = resp.data.data.total
             this.userList = resp.data.data.list

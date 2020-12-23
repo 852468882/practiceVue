@@ -24,7 +24,22 @@ html, body, #app {
     text-align: center;
 }
 
-.zk-table{
+/*vue-table-with-tree-grid*/
+.zk-table {
     /*距离上边距 15px*/
     margin-top: 15px;
+}
+
+/*进度条*/
+.el-steps {
+    margin: 15px 0;
+}
+
+.el-step__title {
+    font-size: 14px;
+}
+
+/*富文本编辑器*/
+.ql-editor {
+    min-height: 200px;
 }
