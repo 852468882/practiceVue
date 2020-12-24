@@ -327,7 +327,7 @@ export default {
           this.$message.error('分配角色权限失败!')
         }
       }).catch(err => {
-        this.$message.error('分配角色权限失败!')
+        this.$message.error('分配角色权限失败!请联系管理员!')
       })
     }
   }
